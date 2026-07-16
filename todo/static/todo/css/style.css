@@ -16,7 +16,8 @@ form {
   border-radius: 8px;
 }
 
-input, button {
+input,
+button {
   padding: 0.5rem;
   margin-top: 0.25rem;
 }
@@ -46,4 +47,20 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+.task-overdue {
+  color: #c0392b;
+  font-weight: bold;
+}
+
+.task-overdue a {
+  color: #c0392b;
+}
+
+/* More specific rules to override external CSS (e.g. bootstrap) */
+.text.task-overdue h2,
+.text.task-overdue h2,
+.text.task-overdue h2 a {
+  color: #c0392b !important;
 }

@@ -13,3 +13,7 @@ class Task(models.Model):
         if self.due_at is None:
             return False
         return self.due_at < dt
+
+    @property
+    def overdue(self):
+        return self.is_overdue(timezone.now())

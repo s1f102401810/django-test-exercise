@@ -28,7 +28,7 @@ def detail(request, task_id):
         task = Task.objects.get(pk=task_id)
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
-    
+
     context = {
         'task': task,
     }
@@ -53,6 +53,7 @@ def delete(request, task_id):
 
     task.delete()
     return redirect(index)
+
 
 def update(request, task_id):
     try:
