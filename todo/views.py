@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
+from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
 from todo.models import Task
@@ -14,9 +15,9 @@ def index(request):
         task.save()
 
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = Task.objects.filter(deleted=False).order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = Task.objects.filter(deleted=False).order_by('-posted_at')
 
     context = {
         'tasks': tasks
@@ -51,8 +52,19 @@ def delete(request, task_id):
     except Task.DoesNotExist:
         raise Http404("Task does not exist")
 
-    task.delete()
+    task.deleted = True
+    task.deleted_at = timezone.now()
+    task.save()
     return redirect(index)
+
+
+def trash(request):
+    tasks = Task.objects.filter(deleted=True).order_by('-deleted_at', '-posted_at')
+    context = {
+        'tasks': tasks
+    }
+    return render(request, 'todo/trash.html', context)
+
 
 def update(request, task_id):
     try:
