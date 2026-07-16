@@ -19,7 +19,8 @@ def index(request):
         tasks = Task.objects.order_by('-posted_at')
 
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'incomplete_count': tasks.filter(completed=False).count()#未完了数をカウント
     }
     return render(request, 'todo/index.html', context)
 
