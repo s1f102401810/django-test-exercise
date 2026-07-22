@@ -81,14 +81,18 @@ a:hover {
   text-decoration: underline;
 }
 
-/* スマホ対応 */
-@media (max-width: 600px) {
-  body {
-    margin: 15px;
-    padding: 10px;
-  }
+.task-overdue {
+  color: #c0392b;
+  font-weight: bold;
+}
 
-  button {
-    width: 100%;
-  }
+.task-overdue a {
+  color: #c0392b;
+}
+
+/* More specific rules to override external CSS (e.g. bootstrap) */
+.text.task-overdue h2,
+.text.task-overdue h2,
+.text.task-overdue h2 a {
+  color: #c0392b !important;
 }

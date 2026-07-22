@@ -121,6 +121,18 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.context['tasks'][0], task1)
         self.assertEqual(response.context['tasks'][1], task2)
 
+    def test_overdue_task_is_marked_in_template(self):
+        task = Task(
+            title='overdue task',
+            due_at=timezone.now() - timezone.timedelta(hours=1)
+        )
+        task.save()
+
+        client = Client()
+        response = client.get('/')
+
+        self.assertContains(response, 'task-overdue')
+
     def test_detail_get_success (self) :
         task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)))
         task. save()
