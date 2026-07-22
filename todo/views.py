@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.http import Http404
+from django.utils import timezone
 from django.utils.timezone import make_aware
 from django.utils.dateparse import parse_datetime
 from todo.models import Task
@@ -14,12 +15,13 @@ def index(request):
         task.save()
 
     if request.GET.get('order') == 'due':
-        tasks = Task.objects.order_by('due_at')
+        tasks = Task.objects.filter(deleted=False).order_by('due_at')
     else:
-        tasks = Task.objects.order_by('-posted_at')
+        tasks = Task.objects.filter(deleted=False).order_by('-posted_at')
 
     context = {
-        'tasks': tasks
+        'tasks': tasks,
+        'incomplete_count': tasks.filter(completed=False).count()#未完了数をカウント
     }
     return render(request, 'todo/index.html', context)
 
@@ -65,6 +67,14 @@ def restore(request, task_id):
     task.deleted = False
     task.save()
     return redirect(index)
+
+
+def trash(request):
+    tasks = Task.objects.filter(deleted=True).order_by('-deleted_at', '-posted_at')
+    context = {
+        'tasks': tasks
+    }
+    return render(request, 'todo/trash.html', context)
 
 
 def update(request, task_id):
