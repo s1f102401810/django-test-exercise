@@ -160,18 +160,40 @@ class TodoViewTestCase(TestCase):
         self.assertEqual(response.status_code, 302)
         task.refresh_from_db()
         self.assertTrue(task.deleted)
-        self.assertFalse(Task.objects.filter(pk=task_id, deleted=False).exists())
+        self.assertIsNotNone(task.deleted_at)
 
-    def test_restore_success(self):
-        task = Task(title='task1', due_at=timezone.make_aware(datetime(2024, 7, 1)), deleted=True)
-        task.save()
+    def test_index_hides_deleted_tasks(self):
+        active_task = Task(title='active task', due_at=timezone.make_aware(datetime(2024, 7, 1)))
+        active_task.save()
+        deleted_task = Task(
+            title='deleted task',
+            due_at=timezone.make_aware(datetime(2024, 7, 2)),
+            deleted=True,
+            deleted_at=timezone.now()
+        )
+        deleted_task.save()
 
         client = Client()
-        response = client.get('/{}/restore'.format(task.pk))
+        response = client.get('/')
 
-        self.assertEqual(response.status_code, 302)
-        task.refresh_from_db()
-        self.assertFalse(task.deleted)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context['tasks']), [active_task])
+
+    def test_trash_view_shows_deleted_tasks(self):
+        deleted_task = Task(
+            title='deleted task',
+            due_at=timezone.make_aware(datetime(2024, 7, 2)),
+            deleted=True,
+            deleted_at=timezone.now()
+        )
+        deleted_task.save()
+
+        client = Client()
+        response = client.get('/trash/')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.templates[0].name, 'todo/trash.html')
+        self.assertEqual(list(response.context['tasks']), [deleted_task])
 
     def test_delete_fail(self):
         client = Client()

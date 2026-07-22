@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <title>To Do Application - Trash</title>
+  <meta charset="UTF-8">
+  <meta name="author" content="INIAD">
+  <link rel="stylesheet" href="{% static 'todo/css/style.css' %}">
+</head>
+
+<body>
+  <h1>Trash</h1>
+  <p>Deleted tasks are listed here.</p>
+
+  <div>
+    <a href="{% url 'index' %}">Top</a>
+  </div>
+
+  {% for task in tasks %}
+  <div class="text">
+    <h2>{{ task.title }}</h2>
+    <ul>
+      <li>Deleted at: {{ task.deleted_at }}</li>
+      <li>Posted at: {{ task.posted_at }}</li>
+      {% if task.due_at %}
+      <li>Due at: {{ task.due_at }}</li>
+      {% endif %}
+    </ul>
+  </div>
+  {% empty %}
+  <p>No deleted tasks.</p>
+  {% endfor %}
+</body>
+
+</html>
