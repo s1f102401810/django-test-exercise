@@ -2,93 +2,129 @@
 <!DOCTYPE html>
 <html lang="ja">
 
-  <head>
-    <title>To Do Application</title>
-    <meta charset="UTF-8">
-    <meta name="author" content="INIAD">
-    <link rel="stylesheet" href="{% static 'todo/css/style.css' %}">
-  </head>
-
-  <body>
-    <h1>Sample To Do Application</h1>
-    <p>Remaining tasks: {{ incomplete_count }}</p>
-    <p>You can submit tasks from the following form.</p>
-    <form action="{% url 'index' %}" method="post">
-      {% csrf_token %}
-      <div>
-        <label for="titleInput">Title</label><br>
-        <input id="titleInput" name="title" type="text" placeholder="Input title">
-      </div>
-      <div>
-        <label for="dueInput">Due at:</label><br>
-        <input id="dueInput" name="due_at" type="datetime-local">
-      </div>
-      <div>
-        <button type="submit">Submit</button>
-      </div>
-    </form>
-    <br>
+<head>
+  <title>To Do Application</title>
+  <meta charset="UTF-8">
+  <meta name="author" content="INIAD">
+  <link rel="stylesheet" href="{% static 'todo/css/style.css' %}">
+</head>
 
 <body>
+
   <h1>Sample To Do Application</h1>
+
+  <p>Remaining tasks: {{ incomplete_count }}</p>
+
   <p>You can submit tasks from the following form.</p>
+
+
+  <!-- タスク追加フォーム -->
   <form action="{% url 'index' %}" method="post">
     {% csrf_token %}
+
     <div>
-      <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
-      <a href="{% url 'index' %}?order=post">Sort by Posted Date</a> |
-      <a href="{% url 'trash' %}">Trash</a>
+      <label for="titleInput">Title</label><br>
+      <input id="titleInput" name="title" type="text" placeholder="Input title">
     </div>
 
-    {% for task in tasks %}
-    <!-- 1. 期限間近のタスクには「near-due」というクラスを追加で付与する -->
-    <div class="text {% if task.is_near_due %}near-due{% endif %}">
-      <h2>
-        <a href="{% url 'detail' task.id %}">{{ task.title }}</a>
-        <!-- 2. 期限間近の場合、タイトルの横に警告バッジを表示する -->
-        {% if task.is_near_due %}
-        <span class="badge-alert">⚠️ 期限間近！</span>
-        {% endif %}
-      </h2>
-      <ul>
-        <li>Posted at: {{ task.posted_at }}</li>
-        {% if task.due_at %} 
-        <li>Due at: {{ task.due_at }}</li>
-        {% endif %}
-        {% if task.completed %} 
-        <li>Status: Completed</li>
-        {% else %}
-        <li>Status: Not Completed</li>
-        {% endif %}
-      </ul>
+    <div>
+      <label for="dueInput">Due at:</label><br>
+      <input id="dueInput" name="due_at" type="datetime-local">
     </div>
+
     <div>
       <button type="submit">Submit</button>
     </div>
+
   </form>
+
+
   <br>
 
+
+  <!-- ソート・ゴミ箱リンク -->
   <div>
-    <a href="{% url 'index' %}?order=due">Sort by Due Date</a> |
-    <a href="{% url 'index' %}?order=post">Sort by Posted Date</a>
+    <a href="{% url 'index' %}?order=due">
+      Sort by Due Date
+    </a>
+
+    |
+
+    <a href="{% url 'index' %}?order=post">
+      Sort by Posted Date
+    </a>
+
+    |
+
+    <a href="{% url 'trash' %}">
+      Trash
+    </a>
   </div>
 
+
+  <br>
+
+
+  <!-- タスク一覧 -->
   {% for task in tasks %}
-  <div class="text{% if task.overdue and not task.completed %} task-overdue{% endif %}">
-    <h2{% if task.overdue and not task.completed %} style="color: #c0392b;"{% endif %}><a href="{% url 'detail' task.id %}"{% if task.overdue and not task.completed %} style="color: #c0392b;"{% endif %}>{{ task.title }}</a></h2>
+
+  <div class="text {% if task.is_overdue %}task-overdue{% endif %} {% if task.is_near_due %}near-due{% endif %}">
+
+    <h2>
+      <a href="{% url 'detail' task.id %}">
+        {{ task.title }}
+      </a>
+
+      {% if task.is_near_due %}
+      <span class="badge-alert">
+        ⚠️ 期限間近！
+      </span>
+      {% endif %}
+
+    </h2>
+
+
     <ul>
-      <li>Posted at: {{ task.posted_at }}</li>
+
+      <li>
+        Posted at: {{ task.posted_at }}
+      </li>
+
+
       {% if task.due_at %}
-      <li>Due at: {{ task.due_at }}</li>
+      <li>
+        Due at: {{ task.due_at }}
+      </li>
       {% endif %}
+
+
       {% if task.completed %}
-      <li>Status: Completed</li>
+      <li>
+        Status: Completed
+      </li>
+
       {% else %}
-      <li>Status: Not Completed</li>
+
+      <li>
+        Status: Not Completed
+      </li>
+
       {% endif %}
+
+
     </ul>
+
   </div>
+
+
+  {% empty %}
+
+  <p>No tasks.</p>
+
+
   {% endfor %}
+
+
 </body>
 
 </html>

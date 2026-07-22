@@ -54,9 +54,10 @@ def delete(request, task_id):
         raise Http404("Task does not exist")
 
     task.deleted = True
+    task.deleted_at = timezone.now()
     task.save()
-    return redirect(index)
 
+    return redirect(index)
 
 def restore(request, task_id):
     try:

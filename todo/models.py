@@ -11,11 +11,15 @@ class Task(models.Model):
     deleted = models.BooleanField(default=False)
     deleted_at = models.DateTimeField(null=True, blank=True)
 
-    def is_overdue(self, dt):
+    def is_overdue(self, dt=None):
         if self.due_at is None:
             return False
+
+        if dt is None:
+            dt = timezone.now()
+
         return self.due_at < dt
 
     @property
     def overdue(self):
-        return self.is_overdue(timezone.now())
+        return self.is_overdue()
