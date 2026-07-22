@@ -35,8 +35,15 @@
     </div>
 
     {% for task in tasks %}
-    <div class="text">
-      <h2><a href="{% url 'detail' task.id %}">{{ task.title }}</a></h2>
+    <!-- 1. 期限間近のタスクには「near-due」というクラスを追加で付与する -->
+    <div class="text {% if task.is_near_due %}near-due{% endif %}">
+      <h2>
+        <a href="{% url 'detail' task.id %}">{{ task.title }}</a>
+        <!-- 2. 期限間近の場合、タイトルの横に警告バッジを表示する -->
+        {% if task.is_near_due %}
+        <span class="badge-alert">⚠️ 期限間近！</span>
+        {% endif %}
+      </h2>
       <ul>
         <li>Posted at: {{ task.posted_at }}</li>
         {% if task.due_at %} 
